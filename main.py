@@ -19,7 +19,7 @@ NOTIFICATION_EMAIL = ''
 
 # Sender of the notification emails
 # eg. 'testuser@gmail.com'
-SENDER_EMAIL = 'h@shine.rocks'
+SENDER_EMAIL = ''
 
 # Your sendgrid api key goes here
 SENDGRID_API = ''
@@ -50,9 +50,9 @@ def get_quote():
         exit()
 
 def send_qotd_to_sahara(quote):
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
     try:
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
         driver = webdriver.Chrome(chrome_options=chrome_options)
         driver.get(SARAHAH_URL)
 
@@ -65,11 +65,9 @@ def send_qotd_to_sahara(quote):
         driver.quit()
     except AssertionError:
         handle_error('"Thank you for your honesty" text not found in page_source')
-        driver.quit()
         exit()
     except Exception as e:
         handle_error(e)
-        driver.quit()
         exit()
 
 def main():
@@ -84,8 +82,7 @@ def handle_success(quote):
     send_email(SENDER_EMAIL, NOTIFICATION_EMAIL, subject , message)
 
 def handle_error(error):
-    message = 'There is an error sending qotd to %s.\n' % (SARAHAH_URL)
-    message += error
+    message = 'There is an error sending qotd to %s.\nError: %s' % (SARAHAH_URL, error)
     subject = 'Sarahah error'
     send_email(SENDER_EMAIL, NOTIFICATION_EMAIL, subject , message)
 
